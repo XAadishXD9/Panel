@@ -35,7 +35,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('hvm_panel.log'),
+        logging.FileHandler('eaglenode_panel.log'),
         logging.StreamHandler()
     ]
 )
@@ -46,15 +46,15 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY', ''.join(random.choices(string.ascii_letters + string.digits, k=32)))
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME', 'admin')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'admin')
-PANEL_NAME = os.getenv('PANEL_NAME', 'HVM PANEL')
-WATERMARK = os.getenv('WATERMARK', 'HVM VPS Service')
-WELCOME_MESSAGE = os.getenv('WELCOME_MESSAGE', 'Welcome to HVM PANEL! Power Your Future!')
+PANEL_NAME = os.getenv('PANEL_NAME', 'EAGLE NODE VPS')
+WATERMARK = os.getenv('WATERMARK', 'EAGLE NODE VPS Service')
+WELCOME_MESSAGE = os.getenv('WELCOME_MESSAGE', 'Welcome to EAGLE NODE! Power Your Future!')
 MAX_VPS_PER_USER = int(os.getenv('MAX_VPS_PER_USER', '3'))
 DEFAULT_OS_IMAGE = os.getenv('DEFAULT_OS_IMAGE', 'ubuntu:22.04')
-DOCKER_NETWORK = os.getenv('DOCKER_NETWORK', 'hvm_network')
+DOCKER_NETWORK = os.getenv('DOCKER_NETWORK', 'eaglenode_network')
 MAX_CONTAINERS = int(os.getenv('MAX_CONTAINERS', '100'))
-DB_FILE = 'hvm_panel.db'
-BACKUP_FILE = 'hvm_panel_backup.json'
+DB_FILE = 'eaglenode_panel.db'
+BACKUP_FILE = 'eaglenode_panel_backup.json'
 SERVER_IP = os.getenv('SERVER_IP', socket.gethostbyname(socket.gethostname()))
 SERVER_PORT = int(os.getenv('SERVER_PORT', '3000'))
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
@@ -951,7 +951,7 @@ def create_vps():
                 image_tag,
                 detach=True,
                 privileged=True,
-                hostname=f"hvm-{vps_id}",
+                hostname=f"eaglenode-{vps_id}",
                 mem_limit=memory * 1024 * 1024 * 1024,
                 cpu_period=100000,
                 cpu_quota=int(cpu * 100000),
@@ -959,7 +959,7 @@ def create_vps():
                 security_opt=["seccomp=unconfined"],
                 network=DOCKER_NETWORK,
                 volumes={
-                    f'hvm-{vps_id}': {'bind': '/data', 'mode': 'rw'}
+                    f'eaglenode-{vps_id}': {'bind': '/data', 'mode': 'rw'}
                 },
                 restart_policy={"Name": "always"},
                 ports=ports
@@ -1099,7 +1099,7 @@ def edit_vps(vps_id):
                     new_image_tag,
                     detach=True,
                     privileged=True,
-                    hostname=f"hvm-{vps['vps_id']}",
+                    hostname=f"eaglenode-{vps['vps_id']}",
                     mem_limit=new_memory * 1024 * 1024 * 1024,
                     cpu_period=100000,
                     cpu_quota=int(new_cpu * 100000),
@@ -1107,7 +1107,7 @@ def edit_vps(vps_id):
                     security_opt=["seccomp=unconfined"],
                     network=DOCKER_NETWORK,
                     volumes={
-                        f'hvm-{vps["vps_id"]}': {'bind': '/data', 'mode': 'rw'}
+                        f'eaglenode-{vps["vps_id"]}': {'bind': '/data', 'mode': 'rw'}
                     },
                     restart_policy={"Name": "always"},
                     ports=ports
@@ -1984,4 +1984,5 @@ if __name__ == '__main__':
     monitor_thread = threading.Thread(target=monitor_containers, daemon=True)
     monitor_thread.start()
    
+
     socketio.run(app, host='0.0.0.0', port=SERVER_PORT, debug=DEBUG, allow_unsafe_werkzeug=True)
